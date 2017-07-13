@@ -11,6 +11,7 @@
   "dependencies": {
     "chance": "^1.0.10",
     "generate-random-data": "^0.0.3",
-    "mongodb": "^2.2.29"
+    "mongodb": "^2.2.29",
+    "split2": "^2.1.1"
   }
 }

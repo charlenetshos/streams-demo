@@ -1,4 +1,5 @@
 const fs = require('fs');
+const split = require('split2');
 const { MongoClient, ObjectID } = require('mongodb');
 
 const connectToDb = () =>
@@ -12,42 +13,37 @@ const parseMovieLine = line => {
 };
 
 const update = filename => {
-  let isDone = false;
   let write = 0;
   let read = 0;
 
   connectToDb()
     .then((moviesCollection) => {
-      const readableStream = fs.createReadStream(filename, 'UTF-8');
-      readableStream.on('data', (data) => {
-        const movies = data
-          .split('\n')
-          .filter(movie => movie)
-          .map(parseMovieLine);
+      const splitStream = fs
+        .createReadStream(filename, 'UTF-8')
+        .pipe(split());
 
-        console.log(`Movie lines: ${movies.length}`);
-
-        movies.forEach(movie => {
+      splitStream
+        .on('data', (chunk) => {
+          const movie = parseMovieLine(chunk);
           const _id = new ObjectID(movie._id);
           const runtime = parseInt(movie.runtime, 10);
-
-          if (++read === movies.length) {
-            isDone = true;
-          }
+          read++;
 
           moviesCollection.findOneAndUpdate({ _id }, { $set: { runtime } })
             .then(() => {
               if (++write % 1000 === 0) {
                 console.log(`Updated ${write} movies so far...`);
               }
-
-              if (isDone && write === read) {
-                console.log('Done updating!!!');
-                process.exit();
-              }
             });
+        })
+        .once('end', () => {
+          setInterval(() => {
+            if (read === write) {
+              console.log('Done updating!!!');
+              process.exit();
+            }
+          }, 1000);
         });
-      });
     });
 };
 
