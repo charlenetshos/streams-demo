@@ -47,4 +47,4 @@ const update = filename => {
     });
 };
 
-update('runtimes.txt');
+update('all-runtimes.txt');
