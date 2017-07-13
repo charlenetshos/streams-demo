@@ -1,5 +1,6 @@
 const fs = require('fs');
 const split = require('split2');
+const pressure = require('pressure-stream');
 const { MongoClient, ObjectID } = require('mongodb');
 
 const connectToDb = () =>
@@ -22,28 +23,28 @@ const update = filename => {
         .createReadStream(filename, 'UTF-8')
         .pipe(split());
 
-      splitStream
-        .on('data', (chunk) => {
-          const movie = parseMovieLine(chunk);
-          const _id = new ObjectID(movie._id);
-          const runtime = parseInt(movie.runtime, 10);
-          read++;
+      splitStream.pipe(pressure((row, cb) => {
+        const movie = parseMovieLine(row);
+        const _id = new ObjectID(movie._id);
+        const runtime = parseInt(movie.runtime, 10);
 
-          moviesCollection.findOneAndUpdate({ _id }, { $set: { runtime } })
-            .then(() => {
-              if (++write % 1000 === 0) {
-                console.log(`Updated ${write} movies so far...`);
-              }
-            });
-        })
-        .once('end', () => {
-          setInterval(() => {
-            if (read === write) {
+        moviesCollection.findOneAndUpdate({ _id }, { $set: { runtime } })
+          .then(() => {
+            if (++write % 1000 === 0) {
+              console.log(`Updated ${write} movies so far...`);
+            }
+
+            if (write === read) {
               console.log('Done updating!!!');
               process.exit();
             }
-          }, 1000);
-        });
+            cb();
+          });
+      }, { low: 50, high: 80 }));
+
+      splitStream.on('data', () => {
+        read++;
+      });
     });
 };
 

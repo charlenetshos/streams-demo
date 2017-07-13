@@ -55,6 +55,19 @@ mongodb@^2.2.29:
     mongodb-core "2.1.14"
     readable-stream "2.2.7"
 
+once@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
+  dependencies:
+    wrappy "1"
+
+pressure-stream@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/pressure-stream/-/pressure-stream-1.0.0.tgz#37cdc10e9374462ce57113a65a1d22e8ae6d59d7"
+  dependencies:
+    once "^1.4.0"
+    through2 "^2.0.3"
+
 process-nextick-args@~1.0.6:
   version "1.0.7"
   resolved "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-1.0.7.tgz#150e20b756590ad3f91093f25a4f2ad8bff30ba3"
@@ -102,7 +115,7 @@ string_decoder@~1.0.0:
   dependencies:
     safe-buffer "~5.1.0"
 
-through2@^2.0.2:
+through2@^2.0.2, through2@^2.0.3:
   version "2.0.3"
   resolved "https://registry.npmjs.org/through2/-/through2-2.0.3.tgz#0004569b37c7c74ba39c43f3ced78d1ad94140be"
   dependencies:
@@ -112,6 +125,10 @@ through2@^2.0.2:
 util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
+
+wrappy@1:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
 
 xtend@~4.0.1:
   version "4.0.1"
