@@ -2,3 +2,6 @@
 # yarn lockfile v1
 
 
+chance@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.npmjs.org/chance/-/chance-1.0.10.tgz#03500b04ad94e778dd2891b09ec73a6ad87b1996"
