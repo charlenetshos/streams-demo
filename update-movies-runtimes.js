@@ -16,36 +16,39 @@ const update = filename => {
   let write = 0;
   let read = 0;
 
-  const data = fs.readFileSync(filename).toString();
-
-  const movies = data
-    .split('\n')
-    .filter(movie => movie)
-    .map(parseMovieLine);
-
   connectToDb()
     .then((moviesCollection) => {
-      movies.forEach(movie => {
-        const _id = new ObjectID(movie._id);
-        const runtime = parseInt(movie.runtime, 10);
+      const readableStream = fs.createReadStream(filename, 'UTF-8');
+      readableStream.on('data', (data) => {
+        const movies = data
+          .split('\n')
+          .filter(movie => movie)
+          .map(parseMovieLine);
 
-        if (++read === movies.length) {
-          isDone = true;
-        }
+        console.log(`Movie lines: ${movies.length}`);
 
-        moviesCollection.findOneAndUpdate({ _id }, { $set: { runtime } })
-          .then(() => {
-            if (++write % 1000 === 0) {
-              console.log(`Updated ${write} movies so far...`);
-            }
+        movies.forEach(movie => {
+          const _id = new ObjectID(movie._id);
+          const runtime = parseInt(movie.runtime, 10);
 
-            if (isDone && write === read) {
-              console.log('Done updating!!!');
-              process.exit();
-            }
-          });
+          if (++read === movies.length) {
+            isDone = true;
+          }
+
+          moviesCollection.findOneAndUpdate({ _id }, { $set: { runtime } })
+            .then(() => {
+              if (++write % 1000 === 0) {
+                console.log(`Updated ${write} movies so far...`);
+              }
+
+              if (isDone && write === read) {
+                console.log('Done updating!!!');
+                process.exit();
+              }
+            });
+        });
       });
     });
 };
 
-update('all-runtimes.txt');
+update('runtimes.txt');
