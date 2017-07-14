@@ -1,0 +1,43 @@
+{
+  "vhosts": {
+    "example": {
+      "connection": {
+        "slashes": true,
+        "protocol": "amqp",
+        "hostname": "localhost",
+        "user": "admin",
+        "password": "password"
+      },
+      "exchanges": [
+        "jsinsa",
+        "dead_letters"
+      ],
+      "queues": {
+        "movies_updates": {
+          "options": {
+            "arguments": {
+              "x-dead-letter-exchange": "dead_letters",
+              "x-dead-letter-routing-key": "movies_updates.dead_letter",
+              "x-max-length": 5
+            }
+          }
+        },
+        "dead_letters:movies_updates": {}
+      },
+      "bindings": {
+        "jsinsa[#] -> movies_updates": {},
+        "dead_letters[movies_updates.dead_letter] -> dead_letters:movies_updates": {}
+      },
+      "publications": {
+        "jsinsa": {
+          "exchange": "jsinsa"
+        }
+      },
+      "subscriptions": {
+        "movies_updates": {
+          "queue": "movies_updates"
+        }
+      }
+    }
+  }
+}
