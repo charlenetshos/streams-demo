@@ -61,16 +61,15 @@ const publish = (limit) =>
       const moviesStream = moviesCollection.find().limit(limit).stream();
 
       moviesStream
-        .on('data', (data) => {
+        .pipe(pressure((movie, cb) => {
           counter++;
           setTimeout(() => {
-            publishMovie(broker, data);
+            publishMovie(broker, movie).then(() => cb());
           }, 1000);
-        })
+        }, { high: 5, low: 1, max: 5 }))
         .on('end', () => {
           console.log(`Done reading movies, total: ${counter}`);
         });
     });
-
 
 publish(limit);
